@@ -1,0 +1,19 @@
+backend:
+  name: github
+  repo: yourusername/candyblrd.github.io  # change to your GitHub repo
+  branch: main                            # or master or your default branch
+  auth_type: implicit                    # simplifies OAuth setup with GitHub Pages
+
+media_folder: "static/img"               # folder where uploaded images will be stored
+public_folder: "/img"
+
+collections:
+  - name: "posts"                       # The collection name
+    label: "Blog Posts"                 # Label in the CMS UI
+    folder: "posts"                     # Folder in your repo to save posts
+    create: true                       # Allow creating new posts
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"  # filename format
+    fields:                           # Fields you want in posts
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Body", name: "body", widget: "markdown" }
