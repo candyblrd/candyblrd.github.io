@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog - Smart Theme Website</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .search-bar {
+      width: 100%;
+      max-width: 500px;
+      margin: 2rem auto;
+      display: block;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .blog-card {
+      background-color: var(--background);
+      color: var(--text);
+      border: 1px solid var(--divider);
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      padding: 1.5rem;
+      transition: transform 0.2s;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .blog-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .blog-snippet {
+      margin-bottom: 1rem;
+    }
+
+    .read-more {
+      background-color: var(--primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1 class="hero-title">Blog</h1>
+  </div>
+
+  <nav class="top-nav" id="topNav">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <input type="text" id="searchInput" class="search-bar" placeholder="Search blog posts..." />
+
+  <div class="main-content" id="mainContent">
+    <div class="blog-grid" id="blogContainer">
+      <!-- Blog cards will be injected here -->
+    </div>
+  </div>
+
+  <script>
+    const posts = [
+      "pages/blog1.html",
+      "pages/blog2.html",
+      "pages/blog-about-cats.html"
+    ];
+
+    const container = document.getElementById('blogContainer');
+    const searchInput = document.getElementById('searchInput');
+
+    async function loadPost(url) {
+      const res = await fetch(url);
+      const text = await res.text();
+      const div = document.createElement('div');
+      div.innerHTML = text;
+
+      const title = div.querySelector('h1')?.textContent || 'Untitled';
+      const snippet = div.querySelector('p')?.textContent || 'No preview available.';
+
+      return { title, snippet, url };
+    }
+
+    function renderPosts(postData) {
+      container.innerHTML = '';
+      postData.forEach(post => {
+        const card = document.createElement('div');
+        card.className = 'blog-card';
+
+        card.innerHTML = `
+          <div class="blog-title">${post.title}</div>
+          <div class="blog-snippet">${post.snippet}</div>
+          <a class="read-more" href="${post.url}" target="_blank">Read More</a>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    async function loadAll() {
+      const data = await Promise.all(posts.map(loadPost));
+      renderPosts(data);
+
+      searchInput.addEventListener('input', () => {
+        const q = searchInput.value.toLowerCase();
+        const filtered = data.filter(p =>
+          p.title.toLowerCase().includes(q) ||
+          p.snippet.toLowerCase().includes(q)
+        );
+        renderPosts(filtered);
+      });
+    }
+
+    loadAll();
+  </script>
+</body>
+</html>
